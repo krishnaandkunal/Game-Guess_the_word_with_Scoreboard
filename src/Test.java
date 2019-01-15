@@ -1,63 +1,52 @@
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-class Book{
-    String name;
-    int price;
-}
-class F{
-    public static void main(String args[]){
-        Book[] b = new Book[5];
-        Scanner sc = new Scanner(System.in);
-        for(int i=0; i<5; i++){
-            b[i] = new Book();
-            b[i].name= sc.next();
-            b[i].price= sc.nextInt();
-        }
-        for(int i=0; i<5; i++) {
-            System.out.print(b[i].name);
-            System.out.println("    "+b[i].price);
-        }
+
+class GameEntry {
+    private String name;
+    int score;
+
+    GameEntry(String name, int score){
+        this.name=name;
+        this.score=score;
+    }
+    public String toString(){
+        return "("+name+","+score+")";
     }
 }
 
-class G{
-    public static void main(String args[]){
-        int[] arr = {10,20,30,40,50};
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter index for adding:");
-        int a = sc.nextInt();
-        System.out.println("Enter value for adding:");
-        int b = sc.nextInt();
-        int c = arr[a];
-        int d;
-        arr[a]=b;
-        for(int i=a+1; i<5; i++){
-            d=arr[i];
-            arr[i]=c;
-            c=d;
-        }
-        for(int i=0; i<5 ; i++){
-            System.out.print(arr[i]+" ");
-        }
-        System.out.println("Enter index for deletion:");
-        a = sc.nextInt();
-        for(int i=a; i<4; i++){
-            arr[i]=arr[i+1];
-        }
-        arr[4]=0;
-        for(int i=0; i<5; i++){
-            System.out.print(arr[i]+" ");
+class Scoreboard {
+    private int numEntries = 0;
+    GameEntry[] board;
+
+    public Scoreboard(int capacity) {
+        board = new GameEntry[capacity];
+    }
+
+    public void add(GameEntry gameEntry) {
+        int newScore = gameEntry.score;
+
+        if (numEntries < board.length || newScore > board[numEntries - 1].score) {
+            if (numEntries < board.length) {
+                numEntries++;
+            }
+            int j = numEntries - 1;
+            while (j > 0 && board[j - 1].score < newScore) {
+                board[j] = board[j - 1];
+                j--;
+            }
+            board[j] = gameEntry;
         }
     }
 }
 
 class Hangman3{
-    public static void guess(String word, int ctr){
+    public static int guess(String word, int ctr){
         char[] fi = new char[word.length()];
         for (int i = 0; i <word.length() ; i++) {
             fi[i] = '-';
         }
-        //System.out.println(fi);
+        int score = 0;
         String str = new String(fi);
         Scanner sc = new Scanner(System.in);
         for (int i = 0; i <ctr ; i++) {
@@ -68,11 +57,14 @@ class Hangman3{
             int k = word.indexOf(ch,j);
             if(k!=-1){
                 while(k!=-1){
+                    score += 100;
                     str = str.substring(0,k)+ch+str.substring(k+1,word.length());
                     k = word.indexOf(ch,k+1);
                 }
+
             }
             else{
+                score -=100;
                 System.out.println("Wrong Guess");
             }
             if(str.equalsIgnoreCase(word)){
@@ -80,19 +72,39 @@ class Hangman3{
             }
         }
         if(str.equalsIgnoreCase(word)){
-            System.out.println("You won");
+            System.out.println("Hurray!! You won");
         }
         else{
-            System.out.println("You lost");
+            System.out.println("Oops!! You lost");
             System.out.println("Word is "+word);
         }
+        return score;
     }
     public static void main(String[] args) {
-        String[] word = {"krishna","radha","govind","gopal","hare"};
+        String[] word = {"krishna", "radha", "govind", "gopal", "hare"};
+        Scoreboard scoreboard = new Scoreboard(5);
         Random ra = new Random();
-        int x = ra.nextInt(word.length);
-        int ctr = word[x].length()+1;
-        guess(word[x],ctr);
+        int x;
+        int ctr;
+        Scanner sc = new Scanner(System.in);
+        GameEntry gameEntry;
+        String name;
+        int score;
+        char ch;
+        System.out.println("!!!! Welcome to Hangman Game !!!!");
+        do {
+            System.out.print("Enter Your Name: ");
+            name = sc.next();
+            x = ra.nextInt(word.length);
+            ctr = word[x].length() + 3;
+            score = guess(word[x], ctr);
+            gameEntry = new GameEntry(name,score);
+            scoreboard.add(gameEntry);
+            System.out.println("Your Score : "+score);
+            System.out.println("Scoreboard");
+            System.out.println(Arrays.toString(scoreboard.board));
+            System.out.println("Play again (Y/N) ");
+            ch = sc.next().charAt(0);
+        }while(ch=='Y' || ch=='y');
     }
 }
-
