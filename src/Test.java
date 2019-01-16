@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-
+import java.io.*;
 class GameEntry {
     private String name;
     int score;
@@ -80,21 +80,21 @@ class Hangman3{
         }
         return score;
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String[] word = {"krishna", "radha", "govind", "gopal", "hare"};
         Scoreboard scoreboard = new Scoreboard(5);
         Random ra = new Random();
         int x;
         int ctr;
-        Scanner sc = new Scanner(System.in);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         GameEntry gameEntry;
         String name;
         int score;
-        char ch;
+        char ch='y';
         System.out.println("!!!! Welcome to Hangman Game !!!!");
         do {
             System.out.print("Enter Your Name: ");
-            name = sc.next();
+            name = br.readLine();
             x = ra.nextInt(word.length);
             ctr = word[x].length() + 3;
             score = guess(word[x], ctr);
@@ -104,7 +104,9 @@ class Hangman3{
             System.out.println("Scoreboard");
             System.out.println(Arrays.toString(scoreboard.board));
             System.out.println("Play again (Y/N) ");
-            ch = sc.next().charAt(0);
+            ch = br.readLine().charAt(0);
         }while(ch=='Y' || ch=='y');
     }
 }
+
+
